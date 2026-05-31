@@ -79,3 +79,59 @@ It is an extensible toolkit, complemented by many [additional utilities](https:/
 ## License
 
 Use under the terms of the [bpmn.io license](http://bpmn.io/license).
+
+---
+
+## facgure fork
+
+This fork extends bpmn-js with a standalone production viewer/editor (`public/index.html`) and dev mode enhancements.
+
+### Production viewer
+
+A self-contained HTML page that bundles the BPMN modeler — no build step needed at runtime.
+
+**Build:**
+
+```sh
+npm install
+npm run distro          # builds dist/
+cp -r dist/* public/   # copy bundles into public/
+```
+
+**Run locally:**
+
+```sh
+npx serve public
+# open http://localhost:3000
+```
+
+**Features:**
+
+| Feature | How |
+|---|---|
+| Open `.bpmn` file | Drag & drop onto canvas |
+| Open from clipboard | Paste XML with `Ctrl+V` / `Cmd+V` |
+| Open from URL | `?https://hostname.com/file.bpmn` (requires CORS) |
+| Zoom in / out | `+` / `−` buttons (bottom-left) or mouse wheel |
+| Fit to screen | `Fit` button |
+| Edit diagram | Full modeler palette (top-left) |
+| Save as `.bpmn` | `Save .bpmn` button (bottom-center) |
+| Save as PNG | `Save PNG` button — exports @2x resolution |
+
+> **Note:** URL param loading requires the source server to have `Access-Control-Allow-Origin` CORS headers.
+
+### Dev mode
+
+```sh
+npm run start:viewer   # viewer-only mode (read-only)
+npm start              # full modeler mode
+```
+
+Open `http://localhost:9876/debug.html` (or `9877` for viewer).
+
+Additional dev shortcuts:
+
+- **Drag & drop** a `.bpmn` file to replace the current diagram
+- **Paste** BPMN XML from clipboard (`Ctrl+V`)
+- **URL param** `?https://...` to load a remote diagram on startup
+- Zoom controls at bottom-left of the canvas
