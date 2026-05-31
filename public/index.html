@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BPMN Viewer</title>
+  <link rel="stylesheet" href="assets/diagram-js.css" />
+  <link rel="stylesheet" href="assets/bpmn-js.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: sans-serif;
+      background: #fafafa;
+    }
+
+    #canvas {
+      height: 100%;
+      background: #fff;
+    }
+
+    /* empty state */
+    #empty-state {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    #empty-state-box {
+      text-align: center;
+      color: #bbb;
+      user-select: none;
+    }
+
+    #empty-state-box svg {
+      display: block;
+      margin: 0 auto 16px;
+    }
+
+    #empty-state-box p {
+      margin: 6px 0;
+      font-size: 15px;
+    }
+
+    #empty-state-box kbd {
+      background: #eee;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      padding: 1px 6px;
+      font-size: 13px;
+      font-family: sans-serif;
+    }
+
+    /* zoom controls */
+    #zoom-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: row;
+      gap: 4px;
+      z-index: 100;
+    }
+
+    #zoom-controls button {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,.1);
+    }
+
+    #zoom-controls button:hover { background: #f0f0f0; }
+
+    #zoom-controls .sep { width: 8px; }
+  </style>
+</head>
+<body>
+
+  <div id="canvas"></div>
+
+  <div id="empty-state">
+    <div id="empty-state-box">
+      <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="12" y1="18" x2="12" y2="12"/>
+        <line x1="9" y1="15" x2="15" y2="15"/>
+      </svg>
+      <p>Drop a <strong>.bpmn</strong> file here</p>
+      <p>or paste XML from clipboard <kbd>Ctrl+V</kbd></p>
+    </div>
+  </div>
+
+  <div id="zoom-controls">
+    <button id="btn-zoom-in"  title="Zoom In">+</button>
+    <button id="btn-zoom-out" title="Zoom Out">−</button>
+    <div class="sep"></div>
+    <button id="btn-fit"  title="Fit to Screen" style="font-size:11px">Fit</button>
+    <button id="btn-reset" title="Reset Zoom (100%)" style="font-size:10px">1:1</button>
+  </div>
+
+  <script src="bpmn-navigated-viewer.production.min.js"></script>
+  <script>
+    var viewer = new BpmnJS({ container: '#canvas' });
+
+    function hideEmptyState() {
+      document.getElementById('empty-state').style.display = 'none';
+    }
+
+    function loadXML(xml) {
+      viewer.importXML(xml)
+        .then(function() {
+          viewer.get('canvas').zoom('fit-viewport');
+          hideEmptyState();
+        })
+        .catch(function(err) {
+          console.error('invalid BPMN:', err);
+        });
+    }
+
+    // zoom controls
+    var zoomScroll = viewer.get('zoomScroll');
+    var canvas     = viewer.get('canvas');
+
+    document.getElementById('btn-zoom-in').addEventListener('click', function() { zoomScroll.stepZoom(1); });
+    document.getElementById('btn-zoom-out').addEventListener('click', function() { zoomScroll.stepZoom(-1); });
+    document.getElementById('btn-fit').addEventListener('click', function() { canvas.zoom('fit-viewport'); });
+    document.getElementById('btn-reset').addEventListener('click', function() { canvas.zoom(1); });
+
+    // drag & drop
+    document.addEventListener('dragover', function(e) { e.preventDefault(); });
+    document.addEventListener('drop', function(e) {
+      e.preventDefault();
+      var file = e.dataTransfer.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) { loadXML(ev.target.result); };
+      reader.readAsText(file);
+    });
+
+    // paste from clipboard
+    document.addEventListener('paste', function(e) {
+      var text = e.clipboardData.getData('text/plain');
+      if (text.includes('<bpmn:definitions') || text.includes('<definitions')) {
+        e.preventDefault();
+        loadXML(text);
+      }
+    });
+
+    // load from URL query param e.g. ?https://hostname.com/file.bpmn
+    var urlParam = window.location.search.slice(1);
+    if (urlParam.startsWith('http://') || urlParam.startsWith('https://')) {
+      fetch(urlParam)
+        .then(function(r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.text();
+        })
+        .then(loadXML)
+        .catch(function(err) { console.error('[url-loader]', err); });
+    }
+  </script>
+</body>
+</html>

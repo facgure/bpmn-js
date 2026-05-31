@@ -13,11 +13,13 @@ import Diagram from 'diagram-js/lib/Diagram';
 import ViewerDefaultExport from '../../';
 
 import Viewer from 'lib/Viewer';
+import NavigatedViewer from 'lib/NavigatedViewer';
 
 import inherits from 'inherits-browser';
 
 import {
-  createViewer
+  createViewer,
+  setBpmnJS
 } from 'test/TestHelper';
 
 import { getDi } from 'lib/util/ModelUtil';
@@ -34,7 +36,14 @@ describe('Viewer', function() {
   });
 
 
-  (singleStart ? it.only : it)('should import simple process', function() {
+  if (singleStart) {
+    it.only('bpmn viewer', function() {
+      var viewer = new NavigatedViewer({ container: container });
+      setBpmnJS(viewer);
+    });
+  }
+
+  it('should import simple process', function() {
     var xml = require('../fixtures/bpmn/simple.bpmn');
 
     // when
