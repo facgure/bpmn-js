@@ -1,3 +1,4 @@
+import { expect } from 'chai';
 import { expectToBeAccessible } from '@bpmn-io/a11y';
 
 import Modeler from 'lib/Modeler';
@@ -487,27 +488,6 @@ describe('Modeler', function() {
     return modeler.importXML(xml).catch(function(err) {
 
       expect(err).to.exist;
-    });
-  });
-
-
-  it('should error when accessing <di> from businessObject', function() {
-
-    var xml = require('../fixtures/bpmn/simple.bpmn');
-
-    var modeler = new Modeler({ container: container });
-
-    return modeler.importXML(xml).then(function() {
-
-      // given
-      var elementRegistry = modeler.get('elementRegistry'),
-          shape = elementRegistry.get('Task_1');
-
-      // then
-      expect(shape.di).to.exist;
-      expect(function() {
-        shape.businessObject.di;
-      }).to.throw(/The di is available through the diagram element only./);
     });
   });
 

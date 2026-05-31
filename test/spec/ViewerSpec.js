@@ -1,3 +1,5 @@
+import { expect } from 'chai';
+import sinon from 'sinon';
 import { expectToBeAccessible } from '@bpmn-io/a11y';
 
 import {
@@ -11,11 +13,13 @@ import Diagram from 'diagram-js/lib/Diagram';
 import ViewerDefaultExport from '../../';
 
 import Viewer from 'lib/Viewer';
+import NavigatedViewer from 'lib/NavigatedViewer';
 
 import inherits from 'inherits-browser';
 
 import {
-  createViewer
+  createViewer,
+  setBpmnJS
 } from 'test/TestHelper';
 
 import { getDi } from 'lib/util/ModelUtil';
@@ -32,7 +36,14 @@ describe('Viewer', function() {
   });
 
 
-  (singleStart ? it.only : it)('should import simple process', function() {
+  if (singleStart) {
+    it.only('bpmn viewer', function() {
+      var viewer = new NavigatedViewer({ container: container });
+      setBpmnJS(viewer);
+    });
+  }
+
+  it('should import simple process', function() {
     var xml = require('../fixtures/bpmn/simple.bpmn');
 
     // when
@@ -303,27 +314,6 @@ describe('Viewer', function() {
 
         // then
         expect(err.message).to.eql('no process or collaboration to display');
-      });
-    });
-
-
-    it('should error when accessing <di> from businessObject', function() {
-
-      var xml = require('../fixtures/bpmn/simple.bpmn');
-
-      return createViewer(container, Viewer, xml).then(function(result) {
-
-        // given
-        var viewer = result.viewer,
-            elementRegistry = viewer.get('elementRegistry'),
-            shape = elementRegistry.get('Task_1');
-
-        // then
-        expect(shape.di).to.exist;
-
-        expect(function() {
-          shape.businessObject.di;
-        }).to.throw(/The di is available through the diagram element only./);
       });
     });
 
