@@ -36,12 +36,10 @@ describe('Viewer', function() {
   });
 
 
-  if (singleStart) {
-    it.only('bpmn viewer', function() {
-      var viewer = new NavigatedViewer({ container: container });
-      setBpmnJS(viewer);
-    });
-  }
+  (singleStart ? it.only : it)('bpmn viewer', function() {
+    var viewer = new NavigatedViewer({ container: container });
+    setBpmnJS(viewer);
+  });
 
   it('should import simple process', function() {
     var xml = require('../fixtures/bpmn/simple.bpmn');
