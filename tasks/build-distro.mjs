@@ -20,7 +20,7 @@ function resolve(module, sub) {
 async function run() {
 
   console.log('clean ' + dest);
-  await del(dest);
+  await del([ dest + '/**', '!' + dest, '!' + dest + '/index.html' ]);
 
   console.log('mkdir -p ' + dest);
   fs.mkdirSync(dest, { recursive: true });

@@ -11,7 +11,7 @@ import {
 
 import pkg from './package.json';
 
-const outputDir = 'dist';
+const outputDir = process.env.DISTRO_DIST || 'dist';
 
 const distros = [
   {

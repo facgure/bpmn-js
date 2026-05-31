@@ -54,14 +54,20 @@ npm install
 Then, depending on your use-case you may run any of the following commands:
 
 ```sh
-# build the library and run all tests
-npm run all
+# run the production viewer locally (builds + serves public/)
+npm run serve
 
-# spin up a single local modeler instance
+# spin up a single local modeler instance (dev/test mode)
 npm start
 
-# run the full development setup
+# spin up a viewer-only instance (dev/test mode)
+npm start:viewer
+
+# run the full development setup (all tests, watch mode)
 npm run dev
+
+# build the library and run all tests
+npm run all
 ```
 
 You may need to perform [additional project setup](./docs/project/SETUP.md) when
@@ -84,54 +90,45 @@ Use under the terms of the [bpmn.io license](http://bpmn.io/license).
 
 ## facgure fork
 
-This fork extends bpmn-js with a standalone production viewer/editor (`public/index.html`) and dev mode enhancements.
+This fork ships a standalone production modeler (`public/index.html`) on top of the upstream bpmn-js library.
 
-### Production viewer
-
-A self-contained HTML page that bundles the BPMN modeler — no build step needed at runtime.
-
-**Build:**
+### Running locally
 
 ```sh
 npm install
-npm run distro          # builds dist/
-cp -r dist/* public/   # copy bundles into public/
+npm run serve
 ```
 
-**Run locally:**
+Opens at **http://localhost:3000** — `npm run serve` builds the bundles into `public/` and starts the static server in one step.
 
-```sh
-npx serve public
-# open http://localhost:3000
-```
-
-**Features:**
+### Production modeler features
 
 | Feature | How |
 |---|---|
-| Open `.bpmn` file | Drag & drop onto canvas |
+| Open `.bpmn` file | Drag & drop onto the canvas |
 | Open from clipboard | Paste XML with `Ctrl+V` / `Cmd+V` |
-| Open from URL | `?https://hostname.com/file.bpmn` (requires CORS) |
+| Open from URL | Add `?https://hostname.com/file.bpmn` to the URL (requires CORS on the source server) |
+| Edit diagram | Full modeler palette on the left |
 | Zoom in / out | `+` / `−` buttons (bottom-left) or mouse wheel |
 | Fit to screen | `Fit` button |
-| Edit diagram | Full modeler palette (top-left) |
+| Reset zoom | `1:1` button |
 | Save as `.bpmn` | `Save .bpmn` button (bottom-center) |
-| Save as PNG | `Save PNG` button — exports @2x resolution |
+| Save as PNG | `Save PNG` button — exports at 2× resolution |
 
-> **Note:** URL param loading requires the source server to have `Access-Control-Allow-Origin` CORS headers.
-
-### Dev mode
+### Dev mode (test runner)
 
 ```sh
-npm run start:viewer   # viewer-only mode (read-only)
-npm start              # full modeler mode
+npm start              # full modeler — opens a browser automatically
+npm run start:viewer   # viewer-only (no edit palette)
 ```
 
-Open `http://localhost:9876/debug.html` (or `9877` for viewer).
+The local URL is printed in the terminal. Open the `.../debug.html` path to interact with the diagram directly.
 
-Additional dev shortcuts:
+### Project structure
 
-- **Drag & drop** a `.bpmn` file to replace the current diagram
-- **Paste** BPMN XML from clipboard (`Ctrl+V`)
-- **URL param** `?https://...` to load a remote diagram on startup
-- Zoom controls at bottom-left of the canvas
+| Path | Purpose |
+|---|---|
+| `lib/` | Library source (compiled to `dist/` by `npm run distro`) |
+| `public/index.html` | Production HTML page (committed, served from `public/`) |
+| `public/bpmn-*.js` | Built bundles (generated — not committed) |
+| `public/assets/` | CSS and fonts (generated — not committed) |
