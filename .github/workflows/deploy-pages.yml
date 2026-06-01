@@ -36,6 +36,8 @@ jobs:
 
     - name: Build distro
       run: npm run distro
+      env:
+        DISTRO_DIST: public
 
     - name: List public directory
       run: ls -lh public/
