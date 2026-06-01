@@ -6,6 +6,19 @@ All notable changes to [bpmn-js](https://github.com/bpmn-io/bpmn-js) are documen
 
 ___Note:__ Yet to be released changes appear here._
 
+## [17.4.0](https://github.com/facgure/bpmn-js/compare/v17.3.0...v17.4.0) (2026-06-01)
+
+
+### Features
+
+* add npm run serve for one-command local production setup ([2e48c4b](https://github.com/facgure/bpmn-js/commit/2e48c4bffcd950933009b69c9a5f75306f23e981))
+
+
+### Bug Fixes
+
+* set DISTRO_DIST=public env var for GitHub Pages build ([3947b70](https://github.com/facgure/bpmn-js/commit/3947b70ca0a84da05891aff5399dd29272bc7fd5))
+* use conditional it.only pattern in ViewerSpec to satisfy lint ([2c8bfaa](https://github.com/facgure/bpmn-js/commit/2c8bfaa9fbd27241a3d538bb0a88f684ffb149df))
+
 ## 17.3.0 (2026-05-31)
 
 
