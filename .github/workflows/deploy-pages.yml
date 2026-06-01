@@ -37,6 +37,9 @@ jobs:
     - name: Build distro
       run: npm run distro
 
+    - name: List public directory
+      run: ls -lh public/
+
     - name: Upload Pages artifact
       uses: actions/upload-pages-artifact@v3
       with:
